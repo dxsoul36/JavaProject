@@ -1,0 +1,29 @@
+name: Java CI with Maven
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: maven
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+  semgrep:
+    name: semgrep/ci
+    runs-on: ubuntu-latest
+    container:
+      image: semgrep/semgrep
+    steps:
+       - uses: actions/checkout@v4
+       - run: semgrep ci --sarif > semgrep.sarif
+         env:
+          SEMGREP_APP_TOKEN: "5c987b2659a3189e9ce64a51800e3386ebc42a025d274467cc33afcbc129a50a"
